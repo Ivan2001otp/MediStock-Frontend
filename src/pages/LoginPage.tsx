@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import type { LoginRequest } from "../models/auth";
 import { loginUser } from "../api/httpClient";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [errors, setErrors] = useState({
@@ -66,15 +67,25 @@ const LoginPage = () => {
       actor: formData.role as "VENDOR" | "HOSPITAL",
     };
 
+   
+    
     try {
       const res = await loginUser(payload);
-
+      console.log("api call result");
+      console.log(res);
       if (res.status === 200) {
+        
+        setLoginSuccess(true)
         console.log("✅ Login Success: ", res.data);
+        localStorage.setItem('access_token', res.data.access_token);
+        localStorage.setItem('refresh_token', res.data.refresh_token);
+
+        toast.success(`Login Successfull`)
       } else {
         setLoginError("Invalid login credentials");
       }
     } catch (error: any) {
+      console.log(error);
       setLoginError(error.response?.data?.message || "Something went wrong");
     } finally {
       setIsLoading(false);

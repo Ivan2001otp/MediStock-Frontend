@@ -9,9 +9,9 @@ export interface LoginRequest {
 export interface LoginResponseBase {
     access_token: string;
     refresh_token: string;
-    vendor_name: string;
-    vendor_email: string;
-    vendor_address: string;
+    actor_name: string;
+    actor_email: string;
+    actor_address: string;
     contact: string;
     updated_at: string;
 }
