@@ -64,7 +64,7 @@ const LoginPage = () => {
     const payload: LoginRequest = {
       email: formData.email,
       password: formData.password,
-      actor: formData.role as "VENDOR" | "HOSPITAL",
+      // actor: formData.role as "VENDOR" | "HOSPITAL",
     };
 
    
@@ -170,32 +170,14 @@ const LoginPage = () => {
             )}
           </div>
 
-          <div>
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Login As
-            </label>
-
-            <select
-              id="role"
-              value={formData.role}
-              name="role"
-              onChange={handleChange}
-              className="w-full mt-1 px-4 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-400 focus:outline-none border"
-            >
-              <option value="VENDOR">Vendor</option>
-              <option value="HOSPITAL">Hospital-Client</option>
-            </select>
-          </div>
+         
 
           <motion.button
             whileTap={{ scale: 0.95 }}
             whileHover={{ scale: 1.06 }}
             type="submit"
             disabled={isLoading}
-            className="w-full mt-4 bg-orange-400 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-orange-600 transition"
+            className="w-full mt-4 hover:cursor-pointer bg-orange-400 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-orange-600 transition"
           >
             {isLoading ? "Loading..." : "Sign In"}
           </motion.button>

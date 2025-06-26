@@ -3,7 +3,7 @@ export type Role = 'VENDOR' | 'HOSPITAL';
 export interface LoginRequest {
     email: string;
     password: string;
-    actor: Role;
+    // actor: Role;
 }
 
 export interface LoginResponseBase {

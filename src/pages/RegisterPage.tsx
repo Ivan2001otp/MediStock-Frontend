@@ -151,7 +151,7 @@ const RegisterPage = () => {
                     whileHover={{scale:1.06}}
                     type="submit"
                     disabled={isLoading}
-                    className="w-full mt-4 bg-orange-400 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-orange-600 transition"
+                    className="w-full mt-4 hover:cursor-pointer bg-orange-400 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-orange-600 transition"
                 >
                     {isLoading ? 'Loading...' : 'Register'}
                 </motion.button>
