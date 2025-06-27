@@ -6,12 +6,14 @@ import { motion } from "framer-motion";
 import type { VendorModel } from "../models/onboard";
 import toast from "react-hot-toast";
 import {onBoardVendor} from "../api/httpClient"
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 export default function VendorOnboardPage() {
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const registeredEmailId  = location.state?.registeredEmail;
   // register the modules before hand.
   Swiper.use([Autoplay, Pagination]);
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function VendorOnboardPage() {
   const [formData, setFormData] = useState({
     name: "",
     contact_person: "",
-    email: "",
+    email: registeredEmailId,
     password: "",
     phone: "",
     address: "",
@@ -82,21 +84,20 @@ export default function VendorOnboardPage() {
       email : formData.email,
       address : formData.address,
       overall_quality_rating : parseFloat(String(formData.overall_quality_rating)),
-      avg_delivery_time: parseFloat(String(formData.avg_delivery_time_days))
+      avg_delivery_time_days: parseFloat(String(formData.avg_delivery_time_days))
     }
-
-    async function onboardVendorHandler() {
+    
+    async function onboardVendorHandler(p : VendorModel) {
         try {
-          // localStorage.getItem
-          const result = await onBoardVendor(payload);
-
-          console.log(result);
+          const result = await onBoardVendor(p);
 
           if (result.status == 200) {
             setOnboardSuccess(true);
             console.log("onboarding the vendor is success ✅");
-           
-            navigate("/vendor-dashboard", {state : {vendor : payload}});
+            
+            setTimeout(()=>{
+             navigate("/vendor-dashboard", {state : {vendor : payload}});
+            },1000 );
           }
 
         } catch (error:any) {
@@ -110,12 +111,13 @@ export default function VendorOnboardPage() {
     }
 
     toast.promise(
-      onboardVendorHandler, {
+      onboardVendorHandler(payload), {
         loading: 'Onboarding Vendor ... ',
         success:'Vendor Onboarded successfully',
         error:'❌ Something went wrong !'
       }
     )
+    
 
   };
 
@@ -161,11 +163,11 @@ export default function VendorOnboardPage() {
       valid = false;
     }
 
-    if (!formData.overall_quality_rating) {
+    if (formData.overall_quality_rating == 0) {
       newErrors.overall_quality_rating = "Provide rating";
       valid = false;
     }
-    if (!formData.avg_delivery_time_days) {
+    if (formData.avg_delivery_time_days == 0) {
       newErrors.avg_delievery_days = "Provide avg delivery time";
       valid = false;
     }
@@ -278,10 +280,11 @@ bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-red-600"
             id="email"
             name="email"maxLength={40}
               minLength={12}
-            onChange={handleChange}
+            readOnly={true}
+            // onChange={handleChange}
             value={formData.email}
             placeholder="abc@medical.com"
-            className="w-full focus:ring-2 focus:ring-orange-300 focus:outline-none input px-2 p-3 rounded-md border text-sm"
+            className="w-full focus:ring-2 focus:ring-orange-300 focus:outline-none input px-2 p-3 rounded-md border text-sm "
           />
           {onBoardError.email && <p className="text-sm text-red-500 mt-1">{onBoardError.email}</p>}
         </div>
@@ -372,14 +375,19 @@ bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-red-600"
           <div >
             <br/>
             <br/>
-            
+            {
+              onboardSuccess && <p className="text-sm text-green-500">Onboarded successfully</p>
+            }
+            {
+              normalRegisterErr && <p className="text-sm text-red-500">{normalRegisterErr}</p>
+            }
           </div>
             <motion.button
               type="submit"
               disabled={isLoading}
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.06 }}
-              className="absolute bottom-6 left-8 right-8 md:left-16 md:right-16 mt-6  font-bold text-xl md:w-auto px-6 py-3 border-2 hover:border-4 border-gray-800  bg-gray-300 text-black rounded-full hover:bg-gray-200 transition-all duration-100"
+              className="absolute bottom-6 left-8 right-8 md:left-16 md:right-16 mt-6  font-bold text-xl md:w-auto px-6 py-3 border-2 hover:border-4 border-gray-800  bg-gray-300 text-black rounded-full hover:bg-gray-200 transition-all duration-100 cursor-pointer"
             >
               {isLoading ? "Loading..." : "Onboard Now"}
             </motion.button>

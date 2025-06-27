@@ -16,7 +16,7 @@ export interface VendorModel {
     email:string;
     address:string;
     overall_quality_rating:number;
-    avg_delivery_time : number;
+    avg_delivery_time_days : number;
 }
 
 /*

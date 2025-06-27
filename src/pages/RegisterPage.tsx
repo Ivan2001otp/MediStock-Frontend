@@ -81,7 +81,7 @@ const RegisterPage = () => {
                     localStorage.setItem("access_token", res["data"]["access_token"]);
 
                         if (formData.role==="VENDOR") {
-                            navigate("/vendor-onboard");
+                            navigate("/vendor-onboard", {state : {registeredEmail : formData.email}});
                         } else {
                             navigate("/hospital-onboard");
                         }
