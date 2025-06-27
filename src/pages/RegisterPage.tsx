@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion';
 import React, { useState } from 'react'
+import { registerUser } from '../api/httpClient';
+import type { RegisterRequest } from '../models/auth';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
+ const navigate = useNavigate();
  const [errors, setErrors] = useState({
         email : '',
         password : '',
@@ -17,8 +22,6 @@ const RegisterPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [loginError, setLoginError] = useState('');
     const [loginSuccess, setLoginSuccess] = useState(false);
-
-
 
     
     const validate=()=>{
@@ -59,14 +62,48 @@ const RegisterPage = () => {
         setLoginError('');
         setLoginSuccess(false);
 
-        setTimeout(() => {
-            
+        const payload : RegisterRequest = {
+            email : formData.email,
+            password:formData.password,
+            actor: formData.role as "VENDOR" | "HOSPITAL"
+        };
 
-        }, 1500);
-                // setLoginError("❌ Invalid email or password");
+        async function registerHandler() {
+            try {   
+                console.log("register endpoint")
+                const res = await registerUser(payload);
+               
+                if (res.status == 200) {
+                    setLoginSuccess(true);
+                    console.log("✅ Register success : ",res);
 
+                    localStorage.setItem("refresh_token", res["data"]["refresh_token"]);
+                    localStorage.setItem("access_token", res["data"]["access_token"]);
+
+                        if (formData.role==="VENDOR") {
+                            navigate("/vendor-onboard");
+                        } else {
+                            navigate("/hospital-onboard");
+                        }
+                   
+                } 
+            } catch(error:any) {
+                console.log(error);
+                setLoginError("Something went wrong. Try again");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        toast.promise(
+            registerHandler,
+            {
+                loading: 'Loading...',
+                success:'Registered successfully',
+                error:'❌ Error !'
+            }
+        );
        
-        console.log('✅ Validated Login: ', formData);
     }
 
 
@@ -191,7 +228,7 @@ const RegisterPage = () => {
                     exit={{opacity: 0}}
                     className='text-green-600 font-semibold text-center'
                 >
-                    ✅ Registration successful! Redirecting...
+                    ✅ Making all set for you...
                 </motion.div>
             )}
         </motion.div>

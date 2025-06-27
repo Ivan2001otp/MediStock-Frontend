@@ -71,14 +71,15 @@ const LoginPage = () => {
     
     try {
       const res = await loginUser(payload);
-      console.log("api call result");
-      console.log(res);
-      if (res.status === 200) {
-        
+      console.log("login-api call result");
+      // console.log(res);
+
+      if (res.status == 200) {
+         
         setLoginSuccess(true)
-        console.log("✅ Login Success: ", res.data);
-        localStorage.setItem('access_token', res.data.access_token);
-        localStorage.setItem('refresh_token', res.data.refresh_token);
+        console.log("✅ Login Success: ", res.payload);
+        localStorage.setItem('access_token', res.payload.access_token);
+        localStorage.setItem('refresh_token', res.payload.refresh_token);
 
         toast.success(`Login Successfull`)
       } else {
@@ -91,16 +92,6 @@ const LoginPage = () => {
       setIsLoading(false);
     }
 
-    // setTimeout(() => {
-    //     if (formData.email === "admin@medistock.ai" && formData.password === "123") {
-    //         setLoginSuccess(true);
-    //         setIsLoading(false);
-    //     } else {
-    //         setLoginError("❌ Invalid email or password");
-    //         setIsLoading(false);
-    //     }
-
-    // }, 1500);
   };
 
   return (
