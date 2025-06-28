@@ -83,7 +83,7 @@ const RegisterPage = () => {
                         if (formData.role==="VENDOR") {
                             navigate("/vendor-onboard", {state : {registeredEmail : formData.email}});
                         } else {
-                            navigate("/hospital-onboard");
+                            navigate("/hospital-onboard" , {state : {registeredEmail : formData.email}});
                         }
                    
                 } 

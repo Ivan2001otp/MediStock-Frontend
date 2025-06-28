@@ -3,8 +3,12 @@ import { useState } from "react";
 import type { LoginRequest } from "../models/auth";
 import { loginUser } from "../api/httpClient";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import type { VendorModel } from "../models/onboard";
 
 const LoginPage = () => {
+   const navigate = useNavigate()
+
   const [errors, setErrors] = useState({
     email: "",
     password: "",
@@ -77,17 +81,31 @@ const LoginPage = () => {
       if (res.status == 200) {
          
         setLoginSuccess(true)
-        console.log("✅ Login Success: ", res.payload);
-        localStorage.setItem('access_token', res.payload.access_token);
-        localStorage.setItem('refresh_token', res.payload.refresh_token);
+        console.log("✅ Login Success: ", res["data"]);
+        console.log('access_token', res.data.access_token);
 
+        localStorage.setItem('access_token', res.data.access_token);
+        localStorage.setItem('refresh_token', res.data.refresh_token);
+       
         toast.success(`Login Successfull`)
+
+        // passing email is equivalent to having passed primary ke.
+        const payload  = {
+              email : res["data"]["email"]
+          }
+        console.log("payload to be sent ", payload);
+
+        if (res.data.actor === "VENDOR") {
+          navigate("/vendor-dashboard", {state : {vendor:payload}})
+        } else {
+          navigate("/hospital-dashboard", {state: {hospital:payload}})
+        }
       } else {
         setLoginError("Invalid login credentials");
       }
     } catch (error: any) {
       console.log(error);
-      setLoginError(error.response?.data?.message || "Something went wrong");
+      setLoginError(error.response?.data?.message || "Something went wrong. Try again");
     } finally {
       setIsLoading(false);
     }

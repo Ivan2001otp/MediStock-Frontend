@@ -5,7 +5,7 @@ import type {
   RegisterRequest,
   RegisterResponse,
 } from "../models/auth";
-import axios, { type AxiosResponse } from "axios";
+import axios from "axios";
 import type { VendorModel, VendorOnBoardResponse } from "../models/onboard";
 
 const BASE_URL = "http://localhost:8080/api/v1";
@@ -100,6 +100,8 @@ export const onBoardVendor = async (
   return response.data;
 };
 
+
+
 /* api for register
 {
     "email":"abc@gmail.com",
@@ -116,6 +118,8 @@ export const registerUser = async (
   return response.data;
 };
 
+
+
 /* api for login 
 {
     "email":"abc@gmail.com",
@@ -124,8 +128,8 @@ export const registerUser = async (
 */
 export const loginUser = async (
   credentials: LoginRequest
-): Promise<ApiResponse<LoginResponse>> => {
-  const response = await axiosInstance.post<ApiResponse<LoginResponse>>(
+): Promise<LoginResponse> => {
+  const response = await axiosInstance.post<LoginResponse>(
     `${BASE_URL}/login`,
     credentials
   );

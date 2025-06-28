@@ -4,7 +4,7 @@ import type { VendorModel } from '../models/onboard';
 
 const VendorDashboard = () => {
   const location = useLocation();
-  const vendor : VendorModel = location.state?.vendor;
+  const vendor = location.state?.vendor;
   console.log(vendor);
   
   return (
@@ -13,8 +13,8 @@ const VendorDashboard = () => {
       <div
         className ="min-h-screen flex flex-col items-center text-3xl text-red-500 justify-center"
     >VendorDashboard</div>
-    <div>
-      {vendor.name}
+    <div className='text-5xl text-red-500'>
+      
       {vendor.email}
     </div>
     </div>
