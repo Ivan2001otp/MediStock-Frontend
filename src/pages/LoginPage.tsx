@@ -67,7 +67,6 @@ const LoginPage = () => {
     const payload: LoginRequest = {
       email: formData.email,
       password: formData.password,
-      // actor: formData.role as "VENDOR" | "HOSPITAL",
     };
 
    

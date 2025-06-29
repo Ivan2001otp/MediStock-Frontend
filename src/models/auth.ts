@@ -40,3 +40,15 @@ export interface ApiResponse<T> {
   message: string;
   payload: T;
 }
+
+
+export interface SupplyItem{
+  id : string;
+  name: string;
+  sku : string;
+  units : string;
+  category: string;
+  is_vital : boolean;
+  created_at : string;
+  updated_at : string;
+}

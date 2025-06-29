@@ -4,9 +4,10 @@ import type {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  SupplyItem,
 } from "../models/auth";
 import axios from "axios";
-import type { HospitalOnBoardResponse, HospitalPayload, VendorModel, VendorOnBoardResponse } from "../models/onboard";
+import type { CompleteVendor, HospitalOnBoardResponse, HospitalPayload, VendorModel, VendorOnBoardResponse } from "../models/onboard";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -32,7 +33,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle 401 and refresh
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log("status inside interceptor : ", response.status);
@@ -44,15 +44,16 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
 
     // handle 200, 403, 500
-    // check the status provided my middleware
 
-    // access-token has expired,
     if (error.response?.status === 404) {
       window.location.href = "/not_found";
       originalRequest._retry = false;
     }
-
-    else if (error.response?.status === 403 || error.response?.status === 401) {
+    else if (error.response?.status === 403) {
+      originalRequest._retry = false;
+      window.location.href = "/access_denied";
+    }
+    else if (error.response?.status === 401) {
       originalRequest._retry = true;
 
       const r_token = localStorage.getItem("refresh_token");
@@ -68,7 +69,6 @@ axiosInstance.interceptors.response.use(
           // if status is 200 ,set the new access-token
           // here the refresh token has not yet expired
           const newAccessToken = res.data["data"]["access_token"];
-          console.log("New A-token : ", newAccessToken);
           localStorage.setItem("access_token", newAccessToken);
 
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
@@ -155,3 +155,35 @@ export const loginUser = async (
 
   return response.data;
 };
+
+
+
+// api to fetch vendor by email.
+export const fetchVendorByEmail = async (emailCredential: string): Promise<CompleteVendor> => {
+
+  // it is necessary to pass id as 0. we can pass the target email credential.
+  const response = await axiosInstance.get(
+    `${BASE_URL}/vendors/0`, {
+    params: {
+      email: emailCredential
+    },
+  });
+
+  if (response.status == 200) {
+    return response.data["data"];
+  }
+
+  throw new Error(`The api response for Fetch-vendor-by-email is ${response.status}`);
+}
+
+// api to fetch supply items of specific vendor
+export const fetchSuppliesById = async (id: number): Promise<SupplyItem[]> => {
+  id = 1 // test
+  const response = await axiosInstance.get(`${BASE_URL}/vendors-supply/${id}`);
+  console.log("response - (fetchSuppliesById - ", response);
+  if (response.status == 200) {
+    return response.data;
+  }
+
+  throw new Error(`The api response for Fetch-supplies-by-id is ${response.status}`);
+}

@@ -10,13 +10,13 @@
 }
 */
 export interface VendorModel {
-    name : string;
-    contact_person:string;
-    phone:string;
-    email:string;
-    address:string;
-    overall_quality_rating:number;
-    avg_delivery_time_days : number;
+  name: string;
+  contact_person: string;
+  phone: string;
+  email: string;
+  address: string;
+  overall_quality_rating: number;
+  avg_delivery_time_days: number;
 }
 
 /*
@@ -24,19 +24,34 @@ export interface VendorModel {
  "message":   "success"
 */
 export interface VendorOnBoardResponse {
-    status:number;
-    message:string;
+  status: number;
+  message: string;
 }
 
 export interface HospitalPayload {
-  id : string;
-  name : string;
-  address:string;
-  contact_email:string;
-  contact_phone : string;
+  id: string;
+  name: string;
+  address: string;
+  contact_email: string;
+  contact_phone: string;
 }
 
 export interface HospitalOnBoardResponse {
-  status : number;
-  message : string;
+  status: number;
+  message: string;
+}
+
+
+export interface CompleteVendor {
+  id: number;
+  name: string;
+  contact_person: string;
+  email: string;
+  phone: string;
+  address: string;
+  overall_quality_rating: number;
+  avg_delivery_time_days: number;
+  score:number;
+  created_at: string;
+  updated_at: string;
 }
