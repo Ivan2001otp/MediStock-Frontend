@@ -27,3 +27,16 @@ export interface VendorOnBoardResponse {
     status:number;
     message:string;
 }
+
+export interface HospitalPayload {
+  id : string;
+  name : string;
+  address:string;
+  contact_email:string;
+  contact_phone : string;
+}
+
+export interface HospitalOnBoardResponse {
+  status : number;
+  message : string;
+}

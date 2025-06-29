@@ -6,13 +6,14 @@ import VendorOnboardPage from "./pages/VendorOnboardPage";
 import HospitalOnboardPage from "./pages/HospitalOnboardPage";
 import VendorDashboard from "./pages/VendorDashboard";
 import HospitalDashboard from "./pages/HospitalDashboard";
+import F404page from "./pages/f404page";
 
 function App() {
 
   return (
     <>
         <Routes>
-          
+          <Route path="/not_found" element={<F404page/>}/>
           <Route path="/login" element={<LoginPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="/vendor-onboard" element={<VendorOnboardPage/>}/>

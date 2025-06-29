@@ -6,7 +6,7 @@ import type {
   RegisterResponse,
 } from "../models/auth";
 import axios from "axios";
-import type { VendorModel, VendorOnBoardResponse } from "../models/onboard";
+import type { HospitalOnBoardResponse, HospitalPayload, VendorModel, VendorOnBoardResponse } from "../models/onboard";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -47,33 +47,41 @@ axiosInstance.interceptors.response.use(
     // check the status provided my middleware
 
     // access-token has expired,
-    originalRequest._retry = true;
+    if (error.response?.status === 404) {
+      window.location.href = "/not_found";
+      originalRequest._retry = false;
+    }
 
-    const r_token = localStorage.getItem("refresh_token");
-    if (r_token) {
-      try {
-        const payload = {
-          refresh_token: r_token,
-        };
+    else if (error.response?.status === 403 || error.response?.status === 401) {
+      originalRequest._retry = true;
 
-        const res = await axiosInstance.post("/refresh-token", payload);
+      const r_token = localStorage.getItem("refresh_token");
+      if (r_token) {
+        try {
+          const payload = {
+            refresh_token: r_token,
+          };
 
-        console.log(res);
-        // if status is 200 ,set the new access-token
-        // here the refresh token has not yet expired
-        const newAccessToken = res.data["data"]["access_token"];
-        console.log("New A-token : ", newAccessToken);
-        localStorage.setItem("access_token", newAccessToken);
+          const res = await axiosInstance.post("/refresh-token", payload);
 
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        return axiosInstance(originalRequest);
-      } catch (error) {
-        // here the refresh token has expired
-        console.log("interceptor-response-use error is  : ", error);
-        localStorage.clear();
-        window.location.href = "/login";
-        return Promise.reject(error);
+          console.log(res);
+          // if status is 200 ,set the new access-token
+          // here the refresh token has not yet expired
+          const newAccessToken = res.data["data"]["access_token"];
+          console.log("New A-token : ", newAccessToken);
+          localStorage.setItem("access_token", newAccessToken);
+
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          return axiosInstance(originalRequest);
+        } catch (error) {
+          // here the refresh token has expired
+          console.log("interceptor-response-use error is  : ", error);
+          localStorage.clear();
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
       }
+
     }
   }
 );
@@ -99,6 +107,17 @@ export const onBoardVendor = async (
 
   return response.data;
 };
+
+
+export const onBoardHospital = async (
+  payload: HospitalPayload
+): Promise<HospitalOnBoardResponse> => {
+  const response = await axiosInstance.post<HospitalOnBoardResponse>(
+    `${BASE_URL}/hospital-client`, payload
+  );
+
+  return response.data;
+}
 
 
 

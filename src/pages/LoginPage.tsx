@@ -4,7 +4,6 @@ import type { LoginRequest } from "../models/auth";
 import { loginUser } from "../api/httpClient";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import type { VendorModel } from "../models/onboard";
 
 const LoginPage = () => {
    const navigate = useNavigate()

@@ -399,7 +399,4 @@ bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-red-600"
   );
 }
 
-// Tailwind Input Styling Shortcut
-const inputStyle = `
-  border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400
-`;
+
