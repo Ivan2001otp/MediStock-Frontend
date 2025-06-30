@@ -4,8 +4,20 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import Block from "../components/Block";
 import type { CompleteVendor } from "../models/onboard";
-import type { SupplyItem } from "../models/auth";
-import { fetchSuppliesById, fetchVendorByEmail } from "../api/httpClient";
+import type { InsertSupplyPayload, SupplyItem } from "../models/auth";
+import { fetchSuppliesById, fetchVendorByEmail, insertNewSupplyFromVendor } from "../api/httpClient";
+import Modal from "../components/Modal";
+import toast from "react-hot-toast";
+import SupplyCard from "../components/SupplyCard";
+
+type FormData = {
+  id : string;
+  name:string;
+  sku:string;
+  units:string;
+  category:string;
+  is_vital : boolean;
+}
 
 const VendorDashboard = () => {
   const [completeVendor, setCompleteVendor] = useState<CompleteVendor | null>(
@@ -14,6 +26,10 @@ const VendorDashboard = () => {
   const [supplies, setSupplies] = useState<SupplyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+
+  // dialog box visibility;
+  const [isDialogBoxVisible, setDialogBoxVisibility] = useState<boolean>(false);
 
   const location = useLocation();
   const vendor = location.state?.vendor;
@@ -47,6 +63,105 @@ const VendorDashboard = () => {
 
     fetchVendorAndSupplies();
   }, [vendor.email]);
+
+
+  const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target;
+
+    const newValue  = (name==="sku" || name==="category") ? value.toUpperCase() : value;
+    setFormData({...formData, [name]:newValue});
+  }
+
+  //form data
+  const [formData, setFormData] = useState<FormData>(
+    {id:"", name:"", sku:"", units:"", category:"", is_vital:false}
+  );
+
+  const [formErrors, setFormErrors] = useState({
+    id:"", name:"", sku:"", units:"", category:""
+  });
+
+
+  const validate = ()  => {
+   let valid : boolean = true;
+
+    if (!formData.name) {
+      formErrors.name="Add the supply name ";
+      valid=false;
+    }
+
+    if (!formData.category) {
+      formErrors.category = "Add the category "
+      valid = false;
+    }
+
+    if (!formData.sku) {
+      formErrors.sku = "Add the SKU code "
+      valid=false;
+    }
+
+    if (!formData.units) {
+     formErrors.units = "Add the available units"
+      valid=false;
+    } else {
+      try{
+        let a = parseFloat(formData.units);
+      
+      } catch(err) {
+        formErrors.units="Input should be number format"
+        valid=false;
+      }
+    }
+
+    console.log(formErrors);
+    console.log("valid result : ", valid);
+    setFormErrors(formErrors);
+    return valid;
+  }
+
+  const handleSubmit = async(e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validate()){
+      setFormData({id:"", name:"", sku:"", units:"", category:"", is_vital:false});
+      return;
+    }
+
+    console.log(formData);
+
+    
+
+    const newSupplyPayload : InsertSupplyPayload = {
+      name: formData.name,
+      sku : formData.sku,
+      unit_of_measure : formData.units,
+      category: formData.category,
+      is_vital : formData.is_vital
+    } 
+
+
+    const response = await insertNewSupplyFromVendor(newSupplyPayload, completeVendor!.id);
+    if (response.status == 200) {
+         toast.success("✅ New supply added successfully", )
+
+          const localPayload : SupplyItem = {
+          id: "",
+          name: formData.name,
+          sku: formData.sku,
+          unit_of_measure: formData.units,
+          category: formData.category,
+          is_vital: formData.is_vital,
+          created_at: "",
+          updated_at: ""
+        }
+        supplies.push(localPayload);
+    } else {
+      toast.error("❌ Something went wrong .Try again")
+    }
+    setFormData({id:"", name:"", sku:"", units:"", category:"", is_vital:false});
+    setDialogBoxVisibility(false);
+    
+  };
 
   return (
     <div className="flex  h-screen bg-gray-100 font-sans text-gray-800">
@@ -136,45 +251,128 @@ const VendorDashboard = () => {
                 <p>You can add new medical supplies from here</p>
               </div>
               <div>
-                <button className="hover:bg-blue-400 hover:text-black border-2 hover:border-black bg-blue-700 p-2 rounded-md shadow-md text-sm -mb-2 text-white transition-all duration-300">
+                <button 
+                onClick={()=>{
+                  setDialogBoxVisibility(true);
+                }}
+                className="hover:bg-blue-400 hover:text-black border-2 hover:border-black bg-blue-700 p-2 rounded-md shadow-md text-sm -mb-2 text-white transition-all duration-300">
                   Add Supply
                 </button>
               </div>
             </div>
           </Block>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-5">
-          {supplies.map((supply: SupplyItem, index: number) => (
-            <div key={index + 1}>
-              {/* <p>{supply.id}</p> */}
-              <p>{supply.name}</p>
-              <p>{supply.sku}</p>
-              <p>{supply.units}</p>
-              <p>{supply.category}</p>
-              <p>{supply.is_vital}</p>
-              <p>{supply.created_at}</p>
-              <p>{supply.updated_at}</p>
-              <div>
-                <br />
-              </div>
+
+        <Modal isOpen={isDialogBoxVisible} onClose={()=>{setDialogBoxVisibility(false);
+          setFormErrors({id:"", name:"", sku:"", units:"", category:""});
+          
+        }}>
+          <h2 className="text-xl font-semibold mb-4" >New Supply Item</h2>
+          <form
+            onSubmit={handleSubmit} 
+            className="space-y-4"
+          >
+            <div>
+
+              <input 
+                maxLength={128}
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Supply Name"
+                className="w-full border rounded px-3 py-2"
+              />
+              {
+                formErrors.name && <p className="text-red-500 text-sm">{formErrors.name}</p>
+              }
             </div>
-          ))}
+              
+              <div>
+                  <input
+                    maxLength={30}
+                    name="sku"
+                    type="text"
+                    value={formData.sku}
+                    onChange={handleChange}
+                    placeholder="SKU"
+                    className="w-full border rounded px-3 py-2"
+                  />
+                  {
+                    formErrors.sku && <p className="text-red-500 text-sm">{formErrors.sku}</p>
+                  }
+              </div>
+
+              <div>
+                  <input
+                    maxLength={6}
+                    type="text"
+                    name="units"
+                    value={formData.units}
+                    onChange={handleChange}
+                    placeholder="Eg:20 (only numeric value)"
+                    className="w-full border rounded px-3 py-2"
+                  />
+                  {
+                    formErrors.units && <p className="text-red-500 text-sm">{formErrors.units}</p>
+                  }
+              </div>
+
+                <div>
+                  <input
+                    type="text"
+                    maxLength={128}
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    placeholder="Eg:MEDICINE ; PPE"
+                    className="w-full border rounded px-3 py-2"
+                  />
+                  {
+                      formErrors.category && <p className="text-red-500 text-sm">{formErrors.category}</p>
+                  }
+              </div>
+
+
+              <div>
+                <input
+                id="is_vital"
+                name="Is Vital"
+                type="checkbox"
+                checked={formData.is_vital}
+                onChange={(e) => {
+                  setFormData({...formData, is_vital: e.target.checked})
+                }}
+                className="w-4 h-4 hover:cursor-pointer"
+              />
+              <label
+              id="is_vital"
+              htmlFor="is_vital" className="hover:cursor-pointer text-sm ml-4 font-semibold">Mark it, if the supply is {' '}<span className="text-green-600 text-sm">Vital</span></label>
+              </div>
+            
+            <div className="mt-4">
+               <button
+              type="submit"
+              className="bg-gray-300 border-2 border-gray-700 text-gray-800 font-bold px-4 py-2 rounded-md hover:scale-105 w-full"
+            >
+              Submit
+            </button>
+            </div>
+          </form>
+        </Modal>
+
+        <div className="grid grid-cols-1 md:grid-cols-5  min-h-screen p-4 border-2 border-gray-400 bg-gray-50 rounded shadow-md gap-4">
+        
+
+                {supplies.map((supply: SupplyItem, index: number) => (
+               
+                <SupplyCard key={index} supply={supply} index={index} />
+              ))}
+         
+          
         </div>
       </main>
-      {/* <div className={`flex-1 flex-col  transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16 md:20'}`}>
-        
-        <div className='bg-white p-4 shadow-md rounded-b-lg flex items-center h-16 space-x-4'>
-          <button
-            onClick={toggleSidebar}
-            className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-blue-500 rounded-md p-1"
-          >
-            {isSidebarOpen ? <PanelLeftClose size={24}/> : <PanelLeftOpen size = {24}/>}
-          </button>
-          <h1>Vendor Dashboard - {vendor.email}</h1>
-        </div>
-
-        <MainContent/>
-      </div> */}
+     
     </div>
   );
 };

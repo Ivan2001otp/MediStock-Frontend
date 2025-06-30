@@ -30,7 +30,7 @@ export interface LoginResponse {
   data: {
     access_token: string;
     refresh_token: string;
-    actor:string;
+    actor: string;
     email: string;
   };
 }
@@ -42,13 +42,23 @@ export interface ApiResponse<T> {
 }
 
 
-export interface SupplyItem{
-  id : string;
+export interface SupplyItem {
+  id: string;
   name: string;
-  sku : string;
-  units : string;
+  sku: string;
+  unit_of_measure: string;
   category: string;
-  is_vital : boolean;
-  created_at : string;
-  updated_at : string;
+  is_vital: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+
+// this model is used to insert supply as a vendor.
+export interface InsertSupplyPayload {
+  name: string;
+  sku: string;
+  unit_of_measure: string;
+  category: string;
+  is_vital: boolean;
 }

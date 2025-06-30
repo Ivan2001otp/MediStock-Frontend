@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  InsertSupplyPayload,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -46,7 +47,8 @@ axiosInstance.interceptors.response.use(
     // handle 200, 403, 500
 
     if (error.response?.status === 404) {
-      window.location.href = "/not_found";
+      alert("The resource that you are trying to fetch or add does not exists in backend.")
+      // window.location.href = "/not_found";
       originalRequest._retry = false;
     }
     else if (error.response?.status === 403) {
@@ -85,6 +87,11 @@ axiosInstance.interceptors.response.use(
     }
   }
 );
+
+interface StandardResponse {
+  status: number;
+  message: string;
+}
 
 /* api for onboarding vendor
 {
@@ -186,4 +193,36 @@ export const fetchSuppliesById = async (id: number): Promise<SupplyItem[]> => {
   }
 
   throw new Error(`The api response for Fetch-supplies-by-id is ${response.status}`);
+}
+
+
+
+export const insertNewSupplyFromVendor = async (payload: InsertSupplyPayload, vendorId: number): Promise<StandardResponse> => {
+  console.log("vendor-id while inserting supply : ", vendorId);
+  vendorId = 1;//for testing
+  const response = await axiosInstance.post(`${BASE_URL}/vendors/${vendorId}`, payload);
+
+  if (response.status == 200) {
+    return response.data;
+  }
+  console.log(response);
+  throw new Error(`The api status of (insertNewSupplyFromVendor) is ${response.status}`);
+}
+
+
+export const logoutClient = async (email: string, actor:string):Promise<StandardResponse> => {
+  const response = await axiosInstance.post(`${BASE_URL}/logout`,
+    {
+          params : {
+            email : email,
+            actor : actor
+        },
+    }
+  );
+
+  if (response.status == 200) {
+    return response.data;
+  }
+
+ throw new Error(`The api response for logoutClient is ${response.status}`);
 }

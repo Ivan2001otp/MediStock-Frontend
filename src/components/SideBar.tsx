@@ -1,5 +1,7 @@
 import React from "react";
 import type { CompleteVendor } from "../models/onboard";
+import { logoutClient } from "../api/httpClient";
+import toast from "react-hot-toast";
 
 export const SideBar = (completeVendor: CompleteVendor) => {
   return (
@@ -45,50 +47,25 @@ export const SideBar = (completeVendor: CompleteVendor) => {
       </div>
 
       <div className="mt-4">
-        <button className="w-full border-2 border-gray-500 p-2 bg-gray-100 shadow-sm rounded-lg text-gray-800 text-md font-semibold hover:font-bold hover:bg-orange-300 transition-all duration-300">
+        <button 
+        onClick={async()=>{
+          const response  = await logoutClient(completeVendor.email, "VENDOR");
+          if (response.status==200) {
+            toast.success("✅ Logged successfully")
+            setTimeout(()=>{
+              window.location.href = "/login";
+            },500)
+            
+          } else {
+            toast.success("❌ Logged failed")
+          }
+        }}
+        className="w-full border-2 border-gray-500 p-2 bg-gray-100 shadow-sm rounded-lg text-gray-800 text-md font-semibold hover:font-bold hover:bg-orange-300 transition-all duration-300">
           Logout
         </button>
       </div>
     </div>
-    /*
-    <aside
-        className={`fixed top-0 left-0 h-full bg-blue-800 text-white flex flex-col transition-all duration-300 ease-in-out z-40
-        ${isOpen ? 'w-64':'w-16 md:w-20'}    
-        md:relative`}
-    >
-
-        <div className='p-4 flex items-center justify-center h-18   border-b border-blue-700'>
-            <img  src="./src/assets/medistock_ai_2.png" alt="MediStock AI Logo" className={`duration-300 transition h-16 ${isOpen ? 'mr-2 rounded-md' : 'rounded-md h-12'}`}/>
-            {isOpen && <span className='text-xl font-bold whitespace-nowrap'> MediStock AI</span>}
-        </div>
-
-        <nav className='flex-1 px-2 py-4 space-y-2 overflow-y-auto'>
-            <MenuItem icon={<Home size={20} />} text="Dashboard" isOpen={isOpen} />
-            <MenuItem icon={<Settings size={20} />} text="Vendor Profile" isOpen={isOpen} />
-        </nav>
-
-    </aside>
-    */
+   
   );
 };
 
-interface MenuItemProps {
-  icon: React.ReactNode;
-  text: string;
-  isOpen: boolean;
-}
-
-const MenuItem: React.FC<MenuItemProps> = ({ icon, text, isOpen }) => {
-  return (
-    <a
-      href="#"
-      className={`flex items-center p-3 rounded-md hover:bg-blue-700
-                    ${isOpen ? "justify-start" : "justify-center"}
-                `}
-      title={!isOpen ? text : ""} // tooltip when collapsed
-    >
-      {icon}
-      {isOpen && <span className="ml-4 whitespace-nowrap">{text}</span>}
-    </a>
-  );
-};
