@@ -51,7 +51,7 @@ export const SideBar = (completeVendor: CompleteVendor) => {
         onClick={async()=>{
           const response  = await logoutClient(completeVendor.email, "VENDOR");
           if (response.status==200) {
-            toast.success("✅ Logged successfully")
+            toast.success("Logged-out successfully")
             setTimeout(()=>{
               window.location.href = "/login";
             },500)

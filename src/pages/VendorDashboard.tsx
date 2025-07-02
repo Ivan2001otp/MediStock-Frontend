@@ -48,11 +48,13 @@ const VendorDashboard = () => {
 
         if (vendorData != null) {
           suppliesData = await fetchSuppliesById(vendorData.id);
+          // console.log("supplies data : ", suppliesData);
+          setSupplies(suppliesData);
+          // console.log("state variable : ", supplies);
+
         }
 
-        console.log("supplies data : ", suppliesData);
-        setSupplies(suppliesData.data);
-
+        
       } catch (err: any) {
         console.error("Error fetching vendor/supplies", err);
         setError(err.message || "Unknown error");
@@ -121,14 +123,14 @@ const VendorDashboard = () => {
 
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
+    
+    setFormData({id:"", name:"", sku:"", units:"", category:"", is_vital:false});
 
-    if (!validate()){
-      setFormData({id:"", name:"", sku:"", units:"", category:"", is_vital:false});
+    if (! validate()) {
       return;
     }
 
-    console.log(formData);
-
+    console.log("formdata - ", formData);
     const newSupplyPayload : InsertSupplyPayload = {
       name: formData.name,
       sku : formData.sku,
@@ -139,6 +141,7 @@ const VendorDashboard = () => {
 
 
     const response = await insertNewSupplyFromVendor(newSupplyPayload, completeVendor!.id);
+
     if (response.status == 200) {
          toast.success("✅ New supply added successfully", )
 
@@ -152,11 +155,12 @@ const VendorDashboard = () => {
           created_at: "",
           updated_at: ""
         }
+
         supplies.push(localPayload);
     } else {
       toast.error("❌ Something went wrong .Try again")
     }
-    setFormData({id:"", name:"", sku:"", units:"", category:"", is_vital:false});
+    
     setDialogBoxVisibility(false);
     
   };
@@ -261,7 +265,9 @@ const VendorDashboard = () => {
           </Block>
         </div>
 
-        <Modal isOpen={isDialogBoxVisible} onClose={()=>{setDialogBoxVisibility(false);
+        <Modal isOpen={isDialogBoxVisible} onClose={()=>{   
+          
+          setDialogBoxVisibility(false);
           setFormErrors({id:"", name:"", sku:"", units:"", category:""});
           
         }}>

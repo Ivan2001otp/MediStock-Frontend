@@ -97,7 +97,7 @@ const HospitalDashboard = () => {
                 
                 const response  = await logoutClient(completeHospital!.contact_email, "VENDOR");
                   if (response.status==200) {
-                    toast.success("✅ Logged successfully")
+                    toast.success("Logged-out successfully")
                     setTimeout(()=>{
                       window.location.href = "/login";
                     },500)

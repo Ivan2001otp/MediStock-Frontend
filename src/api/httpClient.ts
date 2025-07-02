@@ -239,10 +239,9 @@ export const fetchSuppliesById = async (id: number): Promise<SupplyItem[]> => {
 
 
 export const insertNewSupplyFromVendor = async (payload: InsertSupplyPayload, vendorId: number): Promise<StandardResponse> => {
-  console.log("vendor-id while inserting supply : ", vendorId);
-  // vendorId = 1;//for testing
   const response = await axiosInstance.post(`${BASE_URL}/vendors/${vendorId}`, payload);
-
+  console.log("inserting new supply respons : ", response);
+  
   if (response.status == 200) {
     return response.data;
   }
