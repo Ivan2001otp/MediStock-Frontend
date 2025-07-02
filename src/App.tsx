@@ -6,8 +6,10 @@ import VendorOnboardPage from "./pages/VendorOnboardPage";
 import HospitalOnboardPage from "./pages/HospitalOnboardPage";
 import VendorDashboard from "./pages/VendorDashboard";
 import HospitalDashboard from "./pages/HospitalDashboard";
-import F404page from "./pages/f404page";
+import F404page from "./pages/F404page";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
+import SetOrderPage from "./pages/SetOrderPage";
+import SupplySelectionPage from "./pages/SupplySelectionPage";
 
 function App() {
 
@@ -22,6 +24,8 @@ function App() {
           <Route path="/hospital-onboard" element={<HospitalOnboardPage/>}/>
           <Route path="/vendor-dashboard" element={<VendorDashboard/>}/>
           <Route path="/hospital-dashboard" element={<HospitalDashboard/>}/>
+          <Route path="/order-supplies" element={<SetOrderPage/>}/>
+          <Route path="/supplies-selection" element={<SupplySelectionPage/>}/>
         </Routes>
         <Toaster position="top-center" 
         reverseOrder={false}/>

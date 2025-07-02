@@ -62,3 +62,15 @@ export interface InsertSupplyPayload {
   category: string;
   is_vital: boolean;
 }
+
+
+// this model is used to describe the hospital...
+export interface CompleteHospital {
+  id :string;
+  name:string;
+  address:string;
+  contact_email:string;
+  contact_phone : string;
+  created_at:string;
+  updated_at:string;
+}

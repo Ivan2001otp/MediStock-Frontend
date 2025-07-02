@@ -42,16 +42,34 @@ export interface HospitalOnBoardResponse {
 }
 
 
+export interface PaginatedResponse {
+  status : number;
+  data : CompleteVendor[],
+  next_cursor:number
+}
+
 export interface CompleteVendor {
   id: number;
   name: string;
   contact_person: string;
-  email: string;
+  
   phone: string;
+  email: string;
   address: string;
   overall_quality_rating: number;
   avg_delivery_time_days: number;
   score:number;
   created_at: string;
   updated_at: string;
+}
+
+export interface OrderedSupply {
+ supply_id:string;
+ supply_name:string;
+ supply_sku : string;
+ supply_category : string;
+ is_vital : boolean;
+ current_stock:number;
+ reorder_threshold:number;
+ vendor_name:string;
 }

@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  CompleteHospital,
   InsertSupplyPayload,
   LoginRequest,
   LoginResponse,
@@ -8,7 +9,8 @@ import type {
   SupplyItem,
 } from "../models/auth";
 import axios from "axios";
-import type { CompleteVendor, HospitalOnBoardResponse, HospitalPayload, VendorModel, VendorOnBoardResponse } from "../models/onboard";
+import type { CompleteVendor, HospitalOnBoardResponse, HospitalPayload, OrderedSupply, PaginatedResponse, VendorModel, VendorOnBoardResponse } from "../models/onboard";
+import toast from "react-hot-toast";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -53,6 +55,7 @@ axiosInstance.interceptors.response.use(
     }
     else if (error.response?.status === 403) {
       originalRequest._retry = false;
+      toast.error("😬 You are not allowed to access protected resources")
       window.location.href = "/access_denied";
     }
     else if (error.response?.status === 401) {
@@ -80,6 +83,8 @@ axiosInstance.interceptors.response.use(
           console.log("interceptor-response-use error is  : ", error);
           localStorage.clear();
           window.location.href = "/login";
+      toast.error("😎 Token expired. Login again")
+
           return Promise.reject(error);
         }
       }
@@ -164,6 +169,43 @@ export const loginUser = async (
 };
 
 
+//api to fetch all vendors paginated manner 
+export const fetchAllVendorsPagination= async(AFTER:number, PAGE_SIZE : number) : Promise<PaginatedResponse> => {
+  const response = await axiosInstance.get(
+    `${BASE_URL}/hospital-supplies`, {
+      params : {
+        after: AFTER,
+        limit:PAGE_SIZE
+      }
+    }
+  );
+
+  console.log("Fetch All Vendors Pagination :" , response.data);
+  if (response.status == 200) {
+    return response.data;
+  }
+
+  throw new Error(`The api response for fetchAllVendorsPagination is ${response.status}`);
+}
+
+// api to fetch hospital by email
+export const fetchHospitalByEmail = async (emailCredential: string): Promise<CompleteHospital> => {
+
+  const response = await axiosInstance.get(
+    `${BASE_URL}/hospital-client`, {
+    params: {
+      email: emailCredential
+    },
+  });
+
+  console.log("response : ", response);
+  if (response.status == 200) {
+    return response.data["data"];
+  }
+
+  throw new Error(`The api response for Fetch-Hospital-by-email is ${response.status}`);
+
+}
 
 // api to fetch vendor by email.
 export const fetchVendorByEmail = async (emailCredential: string): Promise<CompleteVendor> => {
@@ -185,21 +227,20 @@ export const fetchVendorByEmail = async (emailCredential: string): Promise<Compl
 
 // api to fetch supply items of specific vendor
 export const fetchSuppliesById = async (id: number): Promise<SupplyItem[]> => {
-  id = 1 // test
+  // id = 1 // test
   const response = await axiosInstance.get(`${BASE_URL}/vendors-supply/${id}`);
-  console.log("response - (fetchSuppliesById - ", response);
   if (response.status == 200) {
-    return response.data;
+    
+    return response.data?.data || [];
   }
 
   throw new Error(`The api response for Fetch-supplies-by-id is ${response.status}`);
 }
 
 
-
 export const insertNewSupplyFromVendor = async (payload: InsertSupplyPayload, vendorId: number): Promise<StandardResponse> => {
   console.log("vendor-id while inserting supply : ", vendorId);
-  vendorId = 1;//for testing
+  // vendorId = 1;//for testing
   const response = await axiosInstance.post(`${BASE_URL}/vendors/${vendorId}`, payload);
 
   if (response.status == 200) {
@@ -210,13 +251,13 @@ export const insertNewSupplyFromVendor = async (payload: InsertSupplyPayload, ve
 }
 
 
-export const logoutClient = async (email: string, actor:string):Promise<StandardResponse> => {
+export const logoutClient = async (email: string, actor: string): Promise<StandardResponse> => {
   const response = await axiosInstance.post(`${BASE_URL}/logout`,
     {
-          params : {
-            email : email,
-            actor : actor
-        },
+      params: {
+        email: email,
+        actor: actor
+      },
     }
   );
 
@@ -224,5 +265,71 @@ export const logoutClient = async (email: string, actor:string):Promise<Standard
     return response.data;
   }
 
- throw new Error(`The api response for logoutClient is ${response.status}`);
+  throw new Error(`The api response for logoutClient is ${response.status}`);
+}
+
+
+export const bulkOrderSupplies = async(hospitalId:string, supplyItems:SupplyItem[], vendor:CompleteVendor) : Promise<boolean> => {
+ 
+
+  /*
+    request paylaod:
+    {
+      "client_id":hospital_id,
+      "vendor":{
+        "id": vendor.id;
+        "name": vendor.name;
+        "contact_person": vendor.contact_person;
+        "phone": vendor.phone;
+        "email": vendor.email;
+        "address": vendor.address;
+        "overall_quality_rating": vendor.overall_quality_rating;
+        "avg_delivery_time_days": vendor.avg_delivery_time_days;
+        "score":vendor.score;
+        "created_at": vendor.created_at;
+        "updated_at": vendor.updated_at;
+      },
+      "supplies" : [
+
+      ]
+    }
+  */
+
+  const vendorPayload = {
+        "id": vendor.id,
+        "name": vendor.name,
+        "contact_person": vendor.contact_person,
+        "phone": vendor.phone,
+        "email": vendor.email,
+        "address": vendor.address,
+        "overall_quality_rating": vendor.overall_quality_rating,
+        "avg_delivery_time_days": vendor.avg_delivery_time_days,
+        "score":vendor.score,
+        "created_at": vendor.created_at,
+        "updated_at": vendor.updated_at
+  }
+
+  const payload = {
+    "client_id":hospitalId,
+    "vendor":vendorPayload,
+    "supplies":supplyItems
+  }
+  const response = await axiosInstance.post(`${BASE_URL}/hospital-bulk-order-supplies`,payload);
+
+  console.log(response);
+  
+  return false;
+}
+
+// this api is used to display ordered supplies so far, in hospital dashboard.
+export const fetchOrderedSupplyService = async(hospitalId : string) :Promise<OrderedSupply[]> => {
+
+  const response = await axiosInstance.get(`${BASE_URL}/hospital-bulk-order-results`,{
+    params:{
+      "id":hospitalId
+    }
+  });
+  console.log("status : ", response.status)
+  console.log("fetched order supplies : ",response.data);
+  return response.data;
 }

@@ -46,13 +46,13 @@ const VendorDashboard = () => {
 
         let suppliesData: any;
 
-        // console.log("completeVendor : ", completeVendor);<-null
         if (vendorData != null) {
           suppliesData = await fetchSuppliesById(vendorData.id);
         }
 
         console.log("supplies data : ", suppliesData);
         setSupplies(suppliesData.data);
+
       } catch (err: any) {
         console.error("Error fetching vendor/supplies", err);
         setError(err.message || "Unknown error");
@@ -128,8 +128,6 @@ const VendorDashboard = () => {
     }
 
     console.log(formData);
-
-    
 
     const newSupplyPayload : InsertSupplyPayload = {
       name: formData.name,
@@ -233,9 +231,9 @@ const VendorDashboard = () => {
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <Block title="Block 1" className="bg-white p-6 rounded-lg shadow">
-            <p>
-              Your current ML worth score :{" "}
+          <Block title="ML score" className="bg-white p-6 rounded-lg shadow">
+            <p className="text-xl">
+              Inventory Intelligent score :{" "}
               <span className="font-bold text-blue-600 text-2xl">
                 {completeVendor?.score == null
                   ? 10
@@ -245,7 +243,7 @@ const VendorDashboard = () => {
             <p className="text-sm text-gray-500 mt-1">Score updated daily.</p>
           </Block>
 
-          <Block title="Block 2" className="bg-white p-6 rounded-lg shadow">
+          <Block title="Supply Onboarding" className="bg-white p-6 rounded-lg shadow">
             <div className="space-y-2">
               <div>
                 <p>You can add new medical supplies from here</p>
@@ -255,8 +253,8 @@ const VendorDashboard = () => {
                 onClick={()=>{
                   setDialogBoxVisibility(true);
                 }}
-                className="hover:bg-blue-400 hover:text-black border-2 hover:border-black bg-blue-700 p-2 rounded-md shadow-md text-sm -mb-2 text-white transition-all duration-300">
-                  Add Supply
+                className="hover:bg-blue-400 hover:text-black border-2 hover:border-black bg-blue-700 p-2 rounded-full shadow-md text-sm -mb-2 text-white transition-all duration-300">
+                  Get Started
                 </button>
               </div>
             </div>
@@ -361,16 +359,21 @@ const VendorDashboard = () => {
           </form>
         </Modal>
 
-        <div className="grid grid-cols-1 md:grid-cols-5  min-h-screen p-4 border-2 border-gray-400 bg-gray-50 rounded shadow-md gap-4">
-        
-
-                {supplies.map((supply: SupplyItem, index: number) => (
-               
-                <SupplyCard key={index} supply={supply} index={index} />
+        {
+          supplies?.length > 0 ?
+            <div className="grid grid-cols-1 md:grid-cols-5 auto-rows-fr  p-4   rounded gap-4">
+            {
+            supplies.map((supply: SupplyItem, index: number) => (
+                
+                <SupplyCard key={index} supply={supply} index={index}  />
               ))}
-         
           
         </div>
+           : <p className="text-3xl text-center">
+            No Vendor supplies added 
+           </p>
+        }
+        
       </main>
      
     </div>
