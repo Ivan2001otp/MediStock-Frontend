@@ -2,7 +2,50 @@
 
 **Tagline:** Streamlining medical supply chains with AI-driven insights. Connecting hospitals and vendors for optimal stock and timely delivery.
 
-## 🌟 Overview
+## 🌟 Preview/Outputs
+#### Login Page
+![Login-Page](./outputs/login-page.png)
+</br>
+</br>
+#### Register Page
+![Register-Page](./outputs/register-page.png)
+</br>
+</br>
+#### Vendor-Onboard Page
+![Vendor-Onboarding-Page](./outputs/vendor-onboarding.png)
+</br>
+</br>
+#### Hospital-Onboard Page
+![Hospital-Onboarding-Page](./outputs/hospital-onboarding.png)
+</br>
+</br>
+#### Vendor-Dashboard Page
+![Vendor-Dashboard](./outputs/vendor-dashboard.png)
+</br>
+</br>
+#### Hospital-Dashboard Page
+![Hospital-Onboarding-Page](./outputs/hospital-dashboard.png)
+</br>
+</br>
+#### Vendor Adding new medical supplies
+![Vendor-Adding-NewItem-Page](./outputs/vendor-adding-new-item.png)
+</br>
+</br>
+#### Vendor directory page (Seen as Hospital user)
+![Vendor-Directory-Page](./outputs/vendor-directory-page.png)
+</br>
+</br>
+#### Vendor with Supplies (Seen as Hospital user)
+![Vendor-with-supplies](./outputs/vendor-with-supplies.png)
+</br>
+</br>
+#### Vendor with no supplies (Seen as Hospital user)
+![Vendor-with-no-supplies](./outputs/vendor-with-no-supplies.png)
+</br>
+</br>
+#### Hospital ordering supplies from specific vendor
+![hospital-ordering-supplies](./outputs/hospital-ordering-supplies.png)
+
 
 This repository contains the frontend application for **MediStock AI**, an innovative platform designed to optimize the medical supply chain. Built with modern web technologies, it provides intuitive user interfaces for both **Vendors** and **Hospitals**, facilitating efficient order management, supply item listing, and leveraging AI for smarter decision-making.
 
