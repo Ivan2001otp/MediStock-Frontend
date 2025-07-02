@@ -1,5 +1,3 @@
-# MediStock-AI UI
-
 # MediStock AI Frontend
 
 **Tagline:** Streamlining medical supply chains with AI-driven insights. Connecting hospitals and vendors for optimal stock and timely delivery.
