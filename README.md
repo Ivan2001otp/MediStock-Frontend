@@ -2,6 +2,17 @@
 
 **Tagline:** Streamlining medical supply chains with AI-driven insights. Connecting hospitals and vendors for optimal stock and timely delivery.
 
+### GitHub repo for backend and ML
+<div>
+   <div>
+      [Backend-GitHub-repo](https://github.com/Ivan2001otp/MediStock-Backend)
+   </div>
+   <div>
+      [ML-repo](https://github.com/Ivan2001otp/MediStock-ML)
+   </div>
+</div>
+
+
 ## 🌟 Preview/Outputs
 #### Login Page
 ![Login-Page](./outputs/login-page.png)
